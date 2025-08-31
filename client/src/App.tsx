@@ -2,6 +2,9 @@ import './App.css'
 import { useAppStore } from './store'
 import { Notepad } from './components/Notepad'
 import { ABCSingAlong } from './modules/literacy/abcs/components/ABCSingAlong'
+import { BarnAnimals } from './modules/science/barn-animals/components/BarnAnimals'
+import { HomeIntro } from './components/HomeIntro'
+import { SeaAdventure } from './modules/science/sea-adventure/components/SeaAdventure'
 import { ModulePanel } from './components/ModulePanel'
 import { ProfileAvatar } from './components/ProfileAvatarPicker'
 import { SettingsDialogButton } from './components/SettingsDialog'
@@ -83,8 +86,8 @@ function App() {
         </div>
       </header>
 
-      <main className="grid grid-cols-4">
-        <aside className={`border-r bg-white p-3 space-y-4 ${modulePanelMinimized ? 'w-12' : 'w-80'}`}>
+      <main className="flex min-h-0">
+        <aside className={`border-r bg-white p-3 space-y-4 shrink-0 ${modulePanelMinimized ? 'w-12' : 'w-80'}`}>
           <div className="flex items-center justify-between">
             {!modulePanelMinimized && (
               <div className="text-sm text-slate-500"><span className="font-semibold">Modules</span><div className="text-xs text-slate-400">Pick a module to explore. Say things like “show fun math,” “practice halves,” or “quick lessons.”</div></div>
@@ -98,12 +101,12 @@ function App() {
             </>
           )}
         </aside>
-        <section className="col-span-3">
+        <section className="flex-1 min-w-0">
           <ActiveModuleBanner />
           {uiMode === 'notepad' ? (
             <Notepad />
           ) : (
-            <ABCSingAlong />
+            <ActiveModuleView />
           )}
         </section>
       </main>
@@ -141,3 +144,12 @@ function SettingsStrip() {
 }
 
 export default App
+
+function ActiveModuleView() {
+  const { activeModuleId } = useAppStore()
+  if (!activeModuleId) return <HomeIntro />
+  if (activeModuleId === 'science.barn-animals.identify') return <BarnAnimals />
+  if (activeModuleId === 'science.sea-adventure.play') return <SeaAdventure />
+  // Default to ABCs when no specific module selected
+  return <ABCSingAlong />
+}

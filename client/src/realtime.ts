@@ -105,6 +105,10 @@ export async function startRealtime({ ephemeralKey, onStatus }: StartOptions) {
 // Accumulate streamed tool arguments and function names per call
 let callMeta: Record<string, { name?: string, args: string }> = {}
 
+// Simple counters for Sea Adventure session pacing
+let seaEventsDone = 0
+let seaMaxEvents = 0
+
 function recordFunctionName(callId: string, name: string) {
   if (!callMeta[callId]) callMeta[callId] = { args: '' }
   callMeta[callId].name = name
@@ -184,7 +188,29 @@ async function handleTool(callId: string, name: string, args: any) {
       }
       case 'goto_module': {
         const { useAppStore } = await import('./store')
-        useAppStore.getState().setActiveModule(String(args?.id ?? ''))
+        const raw = String(args?.id ?? '').trim()
+        let resolved: string | null = null
+        try {
+          const { MODULES } = await import('./modules')
+          const norm = (s: string) => s.toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim()
+          const rawNorm = norm(raw)
+          // 1) exact id
+          const exact = MODULES.find(m => m.id === raw)
+          if (exact) resolved = exact.id
+          else {
+            // 2) title or topic fuzzy match
+            const byTitle = MODULES.find(m => norm(m.title) === rawNorm || norm(m.title).includes(rawNorm) || rawNorm.includes(norm(m.title)))
+            if (byTitle) resolved = byTitle.id
+            else {
+              // 3) quick alias for barn animals
+              if (/(barn|farm)\s+animals?/.test(rawNorm)) {
+                const barn = MODULES.find(m => m.id === 'science.barn-animals.identify')
+                if (barn) resolved = barn.id
+              }
+            }
+          }
+        } catch {}
+        useAppStore.getState().setActiveModule(resolved ?? raw)
         break
       }
       case 'filter_modules': {
@@ -259,6 +285,70 @@ async function handleTool(callId: string, name: string, args: any) {
       case 'toggle_module_panel': {
         const { useAppStore } = await import('./store')
         useAppStore.getState().toggleModulePanel()
+        break
+      }
+      case 'barn_next': {
+        const { BARN_ANIMALS } = await import('./modules/science/barn-animals/animals')
+        const { barnSetAnimal } = await import('./uiBridge')
+        const idx = Math.floor(Math.random() * BARN_ANIMALS.length)
+        const chosen = BARN_ANIMALS[idx]
+        barnSetAnimal(chosen)
+        output = { ok: true, animal: chosen }
+        break
+      }
+      case 'barn_reveal': {
+        const { barnReveal } = await import('./uiBridge')
+        barnReveal({ name: Boolean(args?.name), sound: Boolean(args?.sound) })
+        break
+      }
+      case 'barn_mark': {
+        const { barnMark } = await import('./uiBridge')
+        barnMark({ nameCorrect: args?.nameCorrect, soundCorrect: args?.soundCorrect })
+        break
+      }
+      case 'barn_reset': {
+        const { barnReset } = await import('./uiBridge')
+        barnReset()
+        break
+      }
+      case 'barn_celebrate': {
+        const { barnCelebrate } = await import('./uiBridge')
+        barnCelebrate()
+        break
+      }
+      case 'sea_next_event': {
+        const { randomSeaEvent } = await import('./modules/science/sea-adventure/creatures')
+        const { seaSetEvent } = await import('./uiBridge')
+        if (seaMaxEvents <= 0) seaMaxEvents = 5 + Math.floor(Math.random()*3) // 5..7
+        if (seaEventsDone >= seaMaxEvents) {
+          output = { ok: true, done: true }
+          break
+        }
+        const ev = randomSeaEvent()
+        seaSetEvent(ev)
+        seaEventsDone += 1
+        output = { ok: true, event: ev, remaining: Math.max(0, seaMaxEvents - seaEventsDone) }
+        break
+      }
+      case 'sea_reveal': {
+        const { seaReveal } = await import('./uiBridge')
+        seaReveal({ count: Boolean(args?.count), color: Boolean(args?.color), name: Boolean(args?.name) })
+        break
+      }
+      case 'sea_mark': {
+        const { seaMark } = await import('./uiBridge')
+        seaMark({ countCorrect: args?.countCorrect, colorCorrect: args?.colorCorrect, nameCorrect: args?.nameCorrect })
+        break
+      }
+      case 'sea_reset': {
+        const { seaReset } = await import('./uiBridge')
+        seaEventsDone = 0; seaMaxEvents = 0
+        seaReset()
+        break
+      }
+      case 'sea_celebrate': {
+        const { seaCelebrate } = await import('./uiBridge')
+        seaCelebrate()
         break
       }
       default:

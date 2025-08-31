@@ -145,6 +145,68 @@ export const TOOL_SUPERSET = [
     name: 'toggle_module_panel',
     description: 'Toggle the module panel minimized state.',
     parameters: { type: 'object', properties: {}, additionalProperties: false }
+  },
+  // Barn Animals module tools
+  {
+    type: 'function',
+    name: 'barn_next',
+    description: 'Pick and show the next barn animal. Returns the selected animal details for evaluation (name and sound).',
+    parameters: { type: 'object', properties: {}, additionalProperties: false }
+  },
+  {
+    type: 'function',
+    name: 'barn_reveal',
+    description: 'Reveal the answer on the UI. Use to show the animal name and/or sound.',
+    parameters: { type: 'object', properties: { name: { type: 'boolean' }, sound: { type: 'boolean' } } }
+  },
+  {
+    type: 'function',
+    name: 'barn_mark',
+    description: 'Mark correctness for the child’s responses on the UI.',
+    parameters: { type: 'object', properties: { nameCorrect: { type: 'boolean' }, soundCorrect: { type: 'boolean' } } }
+  },
+  {
+    type: 'function',
+    name: 'barn_reset',
+    description: 'Reset the Barn Animals activity state.',
+    parameters: { type: 'object', properties: {}, additionalProperties: false }
+  },
+  {
+    type: 'function',
+    name: 'barn_celebrate',
+    description: 'Trigger a small celebration animation.',
+    parameters: { type: 'object', properties: {}, additionalProperties: false }
+  },
+  // Sea Adventure tools
+  {
+    type: 'function',
+    name: 'sea_next_event',
+    description: 'Create and show the next sea adventure event (count fish, color fish, or name creature). Returns event details for evaluation.',
+    parameters: { type: 'object', properties: {}, additionalProperties: false }
+  },
+  {
+    type: 'function',
+    name: 'sea_reveal',
+    description: 'Reveal the correct answer for the current event (count/color/name).',
+    parameters: { type: 'object', properties: { count: { type: 'boolean' }, color: { type: 'boolean' }, name: { type: 'boolean' } } }
+  },
+  {
+    type: 'function',
+    name: 'sea_mark',
+    description: 'Mark correctness for the child’s response for the current event.',
+    parameters: { type: 'object', properties: { countCorrect: { type: 'boolean' }, colorCorrect: { type: 'boolean' }, nameCorrect: { type: 'boolean' } } }
+  },
+  {
+    type: 'function',
+    name: 'sea_reset',
+    description: 'Reset the sea adventure state (round counter and current event).',
+    parameters: { type: 'object', properties: {}, additionalProperties: false }
+  },
+  {
+    type: 'function',
+    name: 'sea_celebrate',
+    description: 'Trigger a small celebration animation for the sea adventure.',
+    parameters: { type: 'object', properties: {}, additionalProperties: false }
   }
 ]
 
