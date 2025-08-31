@@ -1,12 +1,13 @@
 import './App.css'
 import { useAppStore } from './store'
 import { Notepad } from './components/Notepad'
+import { ABCSingAlong } from './modules/literacy/abcs/components/ABCSingAlong'
 import { ModulePanel } from './components/ModulePanel'
 import { ProfileAvatar } from './components/ProfileAvatarPicker'
 import { SettingsDialogButton } from './components/SettingsDialog'
 import { useState } from 'react'
 import { startRealtime, waitForDataChannelOpen } from './realtime'
-import { BASE_SYSTEM_PROMPT } from './prompts/baseSystemPrompt'
+import { BASE_SYSTEM_PROMPT } from './modules/basePrompt'
 import { TOOL_SUPERSET } from './realtimeTools'
 
 async function fetchSessionToken(): Promise<string | null> {
@@ -23,7 +24,8 @@ async function fetchSessionToken(): Promise<string | null> {
 
 function App() {
   const { uiMode, openNotepad, closeNotepad, setTokenStatus, tokenStatus } = useAppStore()
-  const [ephemeral, setEphemeral] = useState<string | null>(null)
+  const { modulePanelMinimized, toggleModulePanel } = useAppStore()
+  const [, setEphemeral] = useState<string | null>(null)
   const [active, setActive] = useState(false)
   const [sessionRef, setSessionRef] = useState<null | { stop: () => void, dc: RTCDataChannel }>(null)
 
@@ -82,19 +84,26 @@ function App() {
       </header>
 
       <main className="grid grid-cols-4">
-        <aside className="border-r bg-white p-3 space-y-4 w-80">
-          <div className="text-sm text-slate-500"><span className="font-semibold">Modules</span><div className="text-xs text-slate-400">Pick a module to explore. Say things like “show fun math,” “practice halves,” or “quick lessons.”</div></div>
-          <ModulePanel />
-          <SettingsStrip />
+        <aside className={`border-r bg-white p-3 space-y-4 ${modulePanelMinimized ? 'w-12' : 'w-80'}`}>
+          <div className="flex items-center justify-between">
+            {!modulePanelMinimized && (
+              <div className="text-sm text-slate-500"><span className="font-semibold">Modules</span><div className="text-xs text-slate-400">Pick a module to explore. Say things like “show fun math,” “practice halves,” or “quick lessons.”</div></div>
+            )}
+            <button className="ml-auto text-xs px-2 py-1 rounded bg-slate-200" onClick={toggleModulePanel}>{modulePanelMinimized ? '▶' : '◀'}</button>
+          </div>
+          {!modulePanelMinimized && (
+            <>
+              <ModulePanel />
+              <SettingsStrip />
+            </>
+          )}
         </aside>
         <section className="col-span-3">
           <ActiveModuleBanner />
           {uiMode === 'notepad' ? (
             <Notepad />
           ) : (
-            <div className="h-full grid place-items-center text-slate-500">
-              {tokenStatus === 'ok' && ephemeral ? 'Ready to start voice once WebRTC is wired.' : 'Press Talk to begin'}
-            </div>
+            <ABCSingAlong />
           )}
         </section>
       </main>

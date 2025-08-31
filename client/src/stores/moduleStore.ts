@@ -1,6 +1,6 @@
 import { create } from 'zustand'
 import type { ModuleMeta, FilterParams, Section } from '../modules/types'
-import { SEED_MODULES } from '../modules/seed'
+import { MODULES } from '../modules'
 import { useProfileStore } from './profileStore'
 
 type ModuleStore = {
@@ -50,11 +50,11 @@ function rank(mods: ModuleMeta[], _p: FilterParams): ModuleMeta[] {
 }
 
 export const useModuleStore = create<ModuleStore>((set) => ({
-  all: SEED_MODULES,
+  all: MODULES,
   view: { chips: [], sections: [] },
   filterModules: (params) => {
     const profile = useProfileStore.getState().profile
-    const filtered = SEED_MODULES.filter(m => matches(m, params, profile.ageBand, profile.grade))
+    const filtered = MODULES.filter(m => matches(m, params, profile.ageBand, profile.grade))
     const ranked = rank(filtered, params)
     const title = 'For You'
     const chips: string[] = []

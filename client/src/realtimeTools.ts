@@ -36,11 +36,13 @@ export const TOOL_SUPERSET = [
     parameters: {
       type: 'object',
       properties: {
-        kind: { type: 'string', enum: ['circle','rect'] },
+        kind: { type: 'string', enum: ['circle','rect','label'] },
         x: { type: 'number' }, y: { type: 'number' },
         size: { type: 'number' }, radius: { type: 'number' },
         width: { type: 'number' }, height: { type: 'number' },
-        color: { type: 'string' }
+        color: { type: 'string' },
+        text: { type: 'string' },
+        fontSize: { type: 'number' }
       },
       required: ['kind','x','y','color']
     }
@@ -77,6 +79,30 @@ export const TOOL_SUPERSET = [
   },
   {
     type: 'function',
+    name: 'abcs_mark_letter',
+    description: 'Light up an alphabet letter in the ABC module.',
+    parameters: { type: 'object', properties: { letter: { type: 'string' } }, required: ['letter'] }
+  },
+  {
+    type: 'function',
+    name: 'abcs_mark_letters',
+    description: 'Light up multiple alphabet letters parsed from a string (e.g., "abcdef").',
+    parameters: { type: 'object', properties: { sequence: { type: 'string' } }, required: ['sequence'] }
+  },
+  {
+    type: 'function',
+    name: 'abcs_reset',
+    description: 'Reset the ABC sing-along progress.',
+    parameters: { type: 'object', properties: {} }
+  },
+  {
+    type: 'function',
+    name: 'abcs_celebrate',
+    description: 'Trigger the celebration animation for completion.',
+    parameters: { type: 'object', properties: {} }
+  },
+  {
+    type: 'function',
     name: 'filter_modules',
     description: 'Filter and rank modules for the left panel. Returns chips and sections.',
     parameters: {
@@ -100,6 +126,25 @@ export const TOOL_SUPERSET = [
     name: 'update_profile',
     description: 'Update the kid profile with a partial patch (favorites, grade, modalities, etc.)',
     parameters: { type: 'object', properties: { patch: { type: 'object' } }, required: ['patch'] }
+  }
+  ,
+  {
+    type: 'function',
+    name: 'minimize_module_panel',
+    description: 'Hide/minimize the left module panel so the main content is bigger.',
+    parameters: { type: 'object', properties: {}, additionalProperties: false }
+  },
+  {
+    type: 'function',
+    name: 'restore_module_panel',
+    description: 'Restore/show the left module panel to normal size.',
+    parameters: { type: 'object', properties: {}, additionalProperties: false }
+  },
+  {
+    type: 'function',
+    name: 'toggle_module_panel',
+    description: 'Toggle the module panel minimized state.',
+    parameters: { type: 'object', properties: {}, additionalProperties: false }
   }
 ]
 

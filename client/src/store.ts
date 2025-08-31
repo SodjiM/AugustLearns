@@ -4,13 +4,15 @@ export type UiMode = 'home' | 'notepad'
 
 export type Shape = {
   id: string
-  kind: 'circle' | 'rect'
+  kind: 'circle' | 'rect' | 'label'
   x: number
   y: number
   size?: number
   width?: number
   height?: number
   color: string
+  text?: string
+  fontSize?: number
 }
 
 type NotepadPage = {
@@ -23,6 +25,7 @@ type NotepadPage = {
 type AppState = {
   uiMode: UiMode
   notepadOpen: boolean
+  modulePanelMinimized: boolean
   pages: NotepadPage[]
   currentPageId: string | null
   tokenStatus: 'idle' | 'loading' | 'ok' | 'error'
@@ -33,6 +36,9 @@ type AppState = {
   setUiMode: (m: UiMode) => void
   openNotepad: () => void
   closeNotepad: () => void
+  minimizeModulePanel: () => void
+  restoreModulePanel: () => void
+  toggleModulePanel: () => void
   newPage: () => void
   appendNote: (text: string) => void
   drawShape: (shape: Omit<Shape, 'id'>) => void
@@ -49,6 +55,7 @@ const makeId = () => Math.random().toString(36).slice(2)
 export const useAppStore = create<AppState>((set, get) => ({
   uiMode: 'home',
   notepadOpen: false,
+  modulePanelMinimized: false,
   pages: [],
   currentPageId: null,
   tokenStatus: 'idle',
@@ -58,6 +65,9 @@ export const useAppStore = create<AppState>((set, get) => ({
   setUiMode: (m) => set({ uiMode: m }),
   openNotepad: () => set({ notepadOpen: true, uiMode: 'notepad' }),
   closeNotepad: () => set({ notepadOpen: false, uiMode: 'home' }),
+  minimizeModulePanel: () => set({ modulePanelMinimized: true }),
+  restoreModulePanel: () => set({ modulePanelMinimized: false }),
+  toggleModulePanel: () => set((s) => ({ modulePanelMinimized: !s.modulePanelMinimized })),
   newPage: () => {
     const page: NotepadPage = { id: makeId(), createdAt: Date.now(), notes: [], shapes: [] }
     set((s) => ({ pages: [page, ...s.pages], currentPageId: page.id }))

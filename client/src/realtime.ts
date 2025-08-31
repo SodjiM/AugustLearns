@@ -155,13 +155,15 @@ async function handleTool(callId: string, name: string, args: any) {
         const { useAppStore } = await import('./store')
         if (!useAppStore.getState().currentPageId) useAppStore.getState().newPage()
         useAppStore.getState().drawShape({
-          kind: args?.kind === 'rect' ? 'rect' : 'circle',
+          kind: args?.kind === 'rect' ? 'rect' : args?.kind === 'label' ? 'label' : 'circle',
           x: Number(args?.x ?? 0.5),
           y: Number(args?.y ?? 0.5),
           size: args?.radius ?? args?.size,
           width: args?.width,
           height: args?.height,
-          color: String(args?.color ?? '#ef4444')
+          color: String(args?.color ?? '#ef4444'),
+          text: args?.text,
+          fontSize: args?.fontSize
         })
         break
       }
@@ -211,6 +213,29 @@ async function handleTool(callId: string, name: string, args: any) {
         if (runtimeMedia) runtimeMedia.getAudioTracks().forEach(tr => tr.enabled = !off)
         break
       }
+      case 'abcs_mark_letter': {
+        const { abcsMarkLetter } = await import('./uiBridge')
+        abcsMarkLetter(String(args?.letter || ''))
+        break
+      }
+      case 'abcs_mark_letters': {
+        const { abcsMarkLetter } = await import('./uiBridge')
+        const seq: string = String(args?.sequence || '')
+        for (const ch of seq) {
+          if (/^[a-z]$/i.test(ch)) abcsMarkLetter(ch)
+        }
+        break
+      }
+      case 'abcs_reset': {
+        const { abcsReset } = await import('./uiBridge')
+        abcsReset()
+        break
+      }
+      case 'abcs_celebrate': {
+        const { triggerCelebrate } = await import('./uiBridge')
+        triggerCelebrate()
+        break
+      }
       case 'open_profile': {
         const { openProfile } = await import('./uiBridge')
         openProfile()
@@ -219,6 +244,21 @@ async function handleTool(callId: string, name: string, args: any) {
       case 'close_profile': {
         const { closeProfile } = await import('./uiBridge')
         closeProfile()
+        break
+      }
+      case 'minimize_module_panel': {
+        const { useAppStore } = await import('./store')
+        useAppStore.getState().minimizeModulePanel()
+        break
+      }
+      case 'restore_module_panel': {
+        const { useAppStore } = await import('./store')
+        useAppStore.getState().restoreModulePanel()
+        break
+      }
+      case 'toggle_module_panel': {
+        const { useAppStore } = await import('./store')
+        useAppStore.getState().toggleModulePanel()
         break
       }
       default:

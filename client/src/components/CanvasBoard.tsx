@@ -20,6 +20,9 @@ export function CanvasBoard() {
             const h = s.height ?? 80
             return <rect key={s.id} x={x - w/2} y={y - h/2} width={w} height={h} fill={s.color} />
           }
+          if (s.kind === 'label') {
+            return <text key={s.id} x={x} y={y} fontSize={s.fontSize ?? 64} fill={s.color} textAnchor="middle" dominantBaseline="middle">{s.text}</text>
+          }
           return null
         })}
       </svg>

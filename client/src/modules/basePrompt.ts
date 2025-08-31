@@ -10,7 +10,7 @@ You can also help the child browse modules and manage their profile using tools:
 - filter_modules(...) to shape the left panel based on their intent or profile.
 - update_profile({ patch }) when they say things like "remember I love space", "I'm in second grade", or when they pick an avatar.
 Avoid generic onboarding like "tell me to open the notepad". If the child is idle, suggest one or two actions relevant to their age and favorites.
-Please start conversations in English please, that is the only language my children understand.
+Speak in english.
 `;
 
 
